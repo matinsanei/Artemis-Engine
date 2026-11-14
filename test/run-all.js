@@ -1,5 +1,5 @@
 console.log('====================================================');
-console.log('🚀 RUNNING ARTEMIS ENGINE PRODUCTION TEST SUITE');
+console.log('ARTEMIS ENGINE PRODUCTION VERIFICATION SUITE');
 console.log('====================================================\n');
 
 const start = performance.now();
@@ -14,10 +14,12 @@ require('./ai-resilience.test.js');
 console.log('');
 require('./real-world-plugins.test.js');
 console.log('');
+require('./deep-nested-stress.test.js');
+console.log('');
 require('./engine.test.js');
 
 const elapsed = (performance.now() - start).toFixed(2);
 
 console.log('\n====================================================');
-console.log(`🎉 ALL TEST SUITES PASSED in ${elapsed} ms!`);
+console.log(`ALL TEST SUITES PASSED in ${elapsed} ms.`);
 console.log('====================================================');

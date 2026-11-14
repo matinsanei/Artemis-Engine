@@ -73,7 +73,11 @@ export const extractExternalDepsPass: TransformPass = {
           declarations.push(
             t.variableDeclarator(
               defaultId,
-              t.memberExpression(depsObject, t.identifier('default'))
+              t.logicalExpression(
+                '||',
+                t.memberExpression(depsObject, t.identifier('default')),
+                depsObject
+              )
             )
           );
         }

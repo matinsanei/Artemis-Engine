@@ -1,52 +1,58 @@
-# 🏹 Artemis Engine
+# Artemis Engine
 
-> **In-memory React/TSX compiler & runtime for dynamic plugins, AI-generated components, and zero-build microfrontends.**
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18%2B-cyan.svg)](https://react.dev/)
+In-memory React/TSX compiler and runtime for dynamic plugins, AI-generated components, and zero-build microfrontends.
 
 ---
 
-## ⚡ The Problem: Why Traditional Bundlers Fail at Runtime
+## Abstract
 
-Traditional JavaScript bundlers (**esbuild**, **Rollup**, **Webpack**) were designed for **build-time compilation** of static applications. When developing dynamic plugin architectures (such as running user-submitted or AI-generated React/TSX code on-the-fly via `new Function` in the browser or on Edge servers), standard bundlers break down:
+Traditional JavaScript bundlers (esbuild, Rollup, Webpack) were designed for build-time compilation of static web applications. When developing dynamic plugin architectures (such as executing user-submitted or AI-generated React/TSX code in-memory via isolated closures in the browser or on edge runtimes), standard bundlers break down:
 
-- ❌ **The `require()` Trap in esbuild:**  
-  When marking dependencies (like `react`) as external, `esbuild` preserves CommonJS `require()` calls or delegates to internal shims. In browser runtimes or ESM contexts, this immediately crashes with:
+- The require() Roadblock in esbuild:
+  When marking dependencies (such as React) as external, esbuild preserves CommonJS require() calls or falls back to internal proxy shims. In browser or pure ESM runtimes, this throws:
   ```text
   ReferenceError: require is not defined
-  // or
   Error: Dynamic require of "..." is not supported
   ```
-- ❌ **The IIFE Wrapper Dilemma in Rollup:**  
-  `Rollup` supports global mappings (`output.globals`), but wraps outputs into rigid IIFE formats (`var NAME = (function (...) { ... })(...)`). Attempting to strip these wrappers via regular expressions to produce raw component factories leads to unbalanced parentheses and syntax errors.
-- ❌ **Performance Overhead:**  
-  Spawning full bundlers in-memory consumes excessive memory and takes hundreds of milliseconds per plugin.
+
+- The IIFE Wrapper Constraint in Rollup:
+  While Rollup supports global mappings (output.globals), its output formats enforce rigid IIFE wrappers. Attempting to strip outer wrappers via regular expressions to construct callable component factories introduces syntax errors and unbalanced parenthesis issues.
+
+- Operational Overhead:
+  Instantiating a full-featured bundler process per dynamic component introduces excessive memory footprint and multi-hundred-millisecond compilation latency.
 
 ---
 
-## 💡 The Solution: Artemis Engine
+## Architecture and Core Philosophy
 
-**Artemis Engine** solves this by abandoning build-time bundlers in favor of an **in-memory, AST-level transformation pipeline** (powered by Babel):
+Artemis Engine eliminates the need for full bundler execution at runtime by utilizing a deterministic, in-memory Babel AST transformation pipeline:
 
-1. **Direct AST Transformations:** Strips TypeScript annotations and converts JSX to `React.createElement` in a single pass (< 15ms).
-2. **Deterministic Dependency Injection:** Rewrites static/dynamic imports into injected host arguments (`__artemis_deps__`) without relying on global scope pollution or runtime `require`.
-3. **Safe Execution Boundary:** Wraps components in isolated closures with built-in React Error Boundaries and prop forwarding.
+1. Direct AST Transformation:
+   Strips TypeScript annotations and compiles JSX down to standard React.createElement calls in a single pass (< 15ms).
 
----
+2. Deterministic Dependency Injection:
+   Rewrites external package imports (such as Three.js, Lucide, Framer Motion) into an injected runtime registry (__artemis_deps__) rather than relying on global namespace pollution or runtime require().
 
-## 🚀 Features
+3. Isolated Execution Boundary:
+   Wraps components inside function-scoped module wrappers with built-in React Error Boundaries and prop forwarding.
 
-- ⚛️ **Modern React/TSX Support:** Native JSX, TypeScript type erasure, and React Fragment handling.
-- 🔗 **Zero `require()` Dependency:** Resolves dependencies deterministically without triggering module resolution errors.
-- ⚡ **Blazing Fast (< 15ms):** Fully in-memory AST manipulation with zero disk I/O.
-- 🛡️ **Safe Scope Execution:** Safely executes components with isolated state and error containment.
-- 🤖 **AI-Ready:** Automatically injects missing React hook destructuring for AI-generated code (e.g., bare `useState` without explicit imports).
+4. Self-Healing AI Resilience:
+   Detects unbound React hook identifiers (such as useState, useEffect, useMemo) generated by language models that omitted explicit imports, and automatically injects appropriate destructuring bindings.
 
 ---
 
-## 📦 Installation
+## Features
+
+- Modern React/TSX Support: Full support for JSX, TypeScript type erasure, and React Fragments.
+- Zero require() Dependency: Guaranteed zero require() leakage in browser environments.
+- High Performance (< 15ms): Pure in-memory AST manipulation with zero disk I/O.
+- External Dependency Injection: Seamlessly inject libraries like Three.js into the isolated component scope.
+- Self-Healing AST Passes: Automatically detects and resolves unbound hooks in AI-generated code.
+- Production-Grade Test Coverage: Verified against 200+ LOC real-world plugins and deep recursive trees using official React 19 SSR.
+
+---
+
+## Installation
 
 ```bash
 npm install artemis-engine
@@ -56,9 +62,9 @@ pnpm add artemis-engine
 
 ---
 
-## 💻 Quick Start
+## Usage
 
-### 1. Compile in Memory
+### 1. In-Memory Compilation
 
 ```typescript
 import { compile } from 'artemis-engine';
@@ -73,8 +79,8 @@ interface CounterProps {
 export default function CounterWidget({ initialCount = 0 }: CounterProps) {
   const [count, setCount] = useState<number>(initialCount);
   return (
-    <div className="p-4 border border-purple-500 rounded-lg">
-      <h3>Live Counter</h3>
+    <div className="counter-card">
+      <h3>Counter</h3>
       <button onClick={() => setCount(c => c + 1)}>
         Count: {count}
       </button>
@@ -87,7 +93,7 @@ export default function CounterWidget({ initialCount = 0 }: CounterProps) {
 const { code, externalDeps } = compile(rawPluginCode);
 ```
 
-### 2. Render on Client
+### 2. Client-Side Rendering
 
 ```tsx
 import React from 'react';
@@ -99,8 +105,8 @@ export function App() {
       code={code}
       props={{ initialCount: 10 }}
       scope={{ React }}
-      fallback={<div>Loading dynamic widget...</div>}
-      onError={(err) => console.error('Failed to render:', err)}
+      fallback={<div>Loading component...</div>}
+      onError={(err) => console.error('Render failure:', err)}
     />
   );
 }
@@ -108,29 +114,51 @@ export function App() {
 
 ---
 
-## 🛠️ Architecture
+## Technical Pipeline
 
 ```
-[Raw TSX / JSX Plugin Code]
-            │
-            ▼
+[Raw TSX / JSX Plugin Source]
+             |
+             v
 [TransformPipeline (AST Passes)]
-  ├── Strip TypeScript Annotations
-  ├── Rewrite External Imports -> Host Arguments
-  ├── Transform JSX -> React.createElement
-  ├── Auto-shim Unbound React Hooks
-  └── Normalize Export Default -> CommonJS Factory
-            │
-            ▼
-[Self-contained JavaScript Factory]
-            │
-            ▼
-[<ArtemisHost /> Execution Environment]
-  └── Renders safely within React Error Boundary
+  |-- Strip TypeScript Annotations
+  |-- Map Host Imports (React, ReactDOM) -> Host Variables
+  |-- Map External Packages -> __artemis_deps__
+  |-- Convert JSX -> React.createElement
+  |-- Auto-shim Unbound React Hooks
+  `-- Normalize Default & Named Exports -> CommonJS Factory
+             |
+             v
+[Self-Contained Module Factory]
+             |
+             v
+[<ArtemisHost /> Component Scope]
+  `-- Evaluated safely and rendered via React Error Boundary
 ```
 
 ---
 
-## 📄 License
+## Verification and Testing
 
-MIT © [Matin Sanei](https://github.com/matinsanei)
+Artemis Engine includes an automated verification test suite:
+
+- Suite 1: JSX Transformation and Attribute Quoting (spreads, aria-*, data-*)
+- Suite 2: Deep TypeScript Erasure (generics, interfaces, non-null assertions)
+- Suite 3: Module Resolution and External Import Mapping
+- Suite 4: AI Code Self-Healing (unbound hooks, template literals)
+- Suite 5: Real-World Plugin Verification (HeroSection 200+ LOC, PixelButton via React 19 SSR)
+- Suite 6: 500-Line Extreme Deep Nesting (20-level hierarchy and Three.js Dependency Injection)
+
+Run the verification suite:
+
+```bash
+pnpm test
+```
+
+---
+
+## License
+
+MIT License
+
+Author: Matin Sanei
