@@ -1,0 +1,60 @@
+{
+  "name": "artemis-engine",
+  "version": "0.1.0",
+  "description": "In-memory React/TSX compiler & runtime for dynamic plugins, AI-generated components, and zero-build microfrontends.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matinsanei/Artemis-Engine.git"
+  },
+  "keywords": [
+    "react",
+    "compiler",
+    "ast",
+    "babel",
+    "runtime",
+    "plugin-system",
+    "microfrontends",
+    "zero-build",
+    "ai-generated-ui",
+    "in-memory"
+  ],
+  "author": "Matin Sanei <saneimatin33@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/matinsanei/Artemis-Engine/issues"
+  },
+  "homepage": "https://github.com/matinsanei/Artemis-Engine#readme",
+  "dependencies": {
+    "@babel/generator": "^7.24.0",
+    "@babel/parser": "^7.24.0",
+    "@babel/traverse": "^7.24.0",
+    "@babel/types": "^7.24.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/babel__generator": "^7.6.8",
+    "@types/babel__traverse": "^7.20.5",
+    "@types/node": "^20.11.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.4.0"
+  }
+}
