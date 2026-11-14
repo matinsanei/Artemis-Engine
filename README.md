@@ -54,10 +54,21 @@ Artemis Engine eliminates the need for full bundler execution at runtime by util
 
 ## Installation
 
+Install directly from GitHub:
+
 ```bash
-npm install artemis-engine
+npm install github:matinsanei/Artemis-Engine
 # or
-pnpm add artemis-engine
+pnpm add github:matinsanei/Artemis-Engine
+```
+
+Or clone and build locally:
+
+```bash
+git clone https://github.com/matinsanei/Artemis-Engine.git
+cd Artemis-Engine
+pnpm install
+pnpm test
 ```
 
 ---
