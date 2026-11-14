@@ -12,6 +12,8 @@ require('./compiler-modules.test.js');
 console.log('');
 require('./ai-resilience.test.js');
 console.log('');
+require('./real-world-plugins.test.js');
+console.log('');
 require('./engine.test.js');
 
 const elapsed = (performance.now() - start).toFixed(2);
